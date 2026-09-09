@@ -69,6 +69,7 @@ export interface TokenValidationResponse {
   used?: boolean;
   election_status?: ElectionStatus;
   election_title?: string;
+  results_token?: string;
   reason?: string;
   message: string;
 }
@@ -77,4 +78,5 @@ export interface VoteSubmissionResponse {
   success: boolean;
   message: string;
   error_code?: string;
+  results_token?: string;
 }

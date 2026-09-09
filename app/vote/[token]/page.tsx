@@ -1,7 +1,8 @@
 import React from 'react';
 import { validateTokenAction } from '@/app/actions/voting';
 import VotingForm from '@/components/VotingForm';
-import { AlertCircle, Ban, Clock } from 'lucide-react';
+import AlreadyVotedRedirect from '@/components/AlreadyVotedRedirect';
+import { AlertCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 
 interface VotePageProps {
@@ -39,31 +40,13 @@ export default async function VotePage({ params }: VotePageProps) {
     );
   }
 
-  // 2. Token already used state
+  // 2. Token already used state -> Automatically redirect to results
   if (validation.used || validation.reason === 'ALREADY_USED') {
     return (
-      <div className="max-w-md mx-auto my-8 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm text-center">
-        <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-600">
-          <Ban className="w-8 h-8" />
-        </div>
-        <h1 className="text-xl font-bold text-slate-900 mb-2">
-          Ballot Already Cast
-        </h1>
-        <p className="text-sm text-slate-600 mb-4">
-          This voting link has already been used.
-        </p>
-        <p className="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200 mb-6">
-          Each voting link can only be used once. Your anonymous vote has already been submitted and cannot be cast again.
-        </p>
-        <div className="border-t border-slate-100 pt-4">
-          <Link
-            href="/"
-            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-          >
-            ← Return to Election Information
-          </Link>
-        </div>
-      </div>
+      <AlreadyVotedRedirect
+        resultsToken={validation.results_token}
+        electionTitle={validation.election_title}
+      />
     );
   }
 

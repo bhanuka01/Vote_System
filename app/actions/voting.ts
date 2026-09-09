@@ -46,6 +46,18 @@ export async function validateTokenAction(rawToken: string): Promise<{
 
     const validation = rpcResult as TokenValidationResponse;
 
+    // If token has already been used or results_token is not returned by RPC, fetch results_token
+    if (validation.used || !validation.results_token) {
+      const { data: settings } = await supabase
+        .from('election_settings')
+        .select('results_token')
+        .eq('id', 1)
+        .single();
+      if (settings?.results_token) {
+        validation.results_token = settings.results_token;
+      }
+    }
+
     if (!validation.valid) {
       return { validation, candidates: [] };
     }
@@ -133,6 +145,19 @@ export async function submitVoteAction(
     }
 
     const response = result as VoteSubmissionResponse;
+
+    // Attach results_token so the student can be redirected to live results
+    if (response.success && !response.results_token) {
+      const { data: settings } = await supabase
+        .from('election_settings')
+        .select('results_token')
+        .eq('id', 1)
+        .single();
+      if (settings?.results_token) {
+        response.results_token = settings.results_token;
+      }
+    }
+
     return response;
   } catch (err: unknown) {
     console.error('[submitVoteAction] Unexpected exception:', err);

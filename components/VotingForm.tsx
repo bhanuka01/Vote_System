@@ -1,9 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Candidate } from '@/lib/types';
 import { submitVoteAction } from '@/app/actions/voting';
-import { CheckCircle2, AlertCircle, ShieldCheck, Lock, HelpCircle } from 'lucide-react';
+import {
+  CheckCircle2,
+  AlertCircle,
+  ShieldCheck,
+  Lock,
+  HelpCircle,
+  ArrowRight,
+  BarChart3,
+} from 'lucide-react';
+import Link from 'next/link';
 
 interface VotingFormProps {
   token: string;
@@ -16,12 +26,31 @@ export default function VotingForm({
   candidates,
   electionTitle = 'FMIS 45 Batch Representative Election',
 }: VotingFormProps) {
+  const router = useRouter();
   const [firstPref, setFirstPref] = useState<string>('');
   const [secondPref, setSecondPref] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [hasVotedSuccess, setHasVotedSuccess] = useState<boolean>(false);
+  const [resultsToken, setResultsToken] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState<number>(3);
+
+  // Automatic redirect to results upon successful voting
+  useEffect(() => {
+    if (!hasVotedSuccess || !resultsToken) return;
+
+    if (countdown <= 0) {
+      router.push(`/results/${resultsToken}`);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [hasVotedSuccess, resultsToken, countdown, router]);
 
   // Helper to find candidate by ID
   const getCandidateName = (id: string) => {
@@ -72,6 +101,9 @@ export default function VotingForm({
       const response = await submitVoteAction(token, firstPref, secondPref);
 
       if (response.success) {
+        if (response.results_token) {
+          setResultsToken(response.results_token);
+        }
         setHasVotedSuccess(true);
         setShowConfirmModal(false);
       } else {
@@ -94,28 +126,54 @@ export default function VotingForm({
           <CheckCircle2 className="w-10 h-10" />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-3">
-          Your vote has been successfully recorded.
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          Your vote has been successfully recorded!
         </h2>
 
         <p className="text-base text-slate-600 mb-6">
-          Thank you for voting in the {electionTitle}.
+          Thank you for participating in the {electionTitle}.
         </p>
+
+        {resultsToken && (
+          <div className="space-y-3 mb-6">
+            <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-xs sm:text-sm text-indigo-900">
+              <p className="font-semibold">
+                Redirecting you to the live results in{' '}
+                <span className="inline-block w-5 text-center font-bold text-indigo-600 text-base">
+                  {countdown}
+                </span>{' '}
+                seconds...
+              </p>
+              <p className="text-xs text-indigo-700/80 mt-0.5">
+                Watch real-time voter turnout and candidate standings.
+              </p>
+            </div>
+
+            <Link
+              href={`/results/${resultsToken}`}
+              className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center space-x-2"
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>View Live Results Now</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
 
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-600 mb-6 space-y-2 text-left">
           <div className="flex items-start space-x-2">
             <Lock className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
             <p className="font-medium text-slate-700">
-              Your voting link has been permanently deactivated.
+              Your voting link has been permanently burned.
             </p>
           </div>
           <p className="text-xs text-slate-500 pl-6">
-            To preserve the secret ballot principle, your candidate selections are stored anonymously and cannot be retrieved or linked to your individual identity.
+            Your candidate choices were stored completely separate from your private link to preserve anonymous voting integrity.
           </p>
         </div>
 
         <p className="text-xs text-slate-400">
-          You may now safely close this browser window.
+          You may also safely bookmark the results link.
         </p>
       </div>
     );
