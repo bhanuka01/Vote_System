@@ -21,7 +21,7 @@ export default function HomePage() {
 
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold uppercase tracking-wider mb-3">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Faculty of Management Information Systems</span>
+          <span>Financial Mathematics and Industrial Statistics</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">

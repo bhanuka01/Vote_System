@@ -1,6 +1,6 @@
 # FMIS 45 Batch Representative Voting Web App
 
-A production-quality, mobile-first, anonymous preferential voting web application built for the **Faculty of Management Information Systems (FMIS 45)** university batch representative election.
+A production-quality, mobile-first, anonymous preferential voting web application built for the **Financial Mathematics and Industrial Statistics (FMIS 45)** university batch representative election.
 
 Built with **Next.js 15 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Supabase (PostgreSQL with Row Level Security & Atomic RPC Functions)**.
 

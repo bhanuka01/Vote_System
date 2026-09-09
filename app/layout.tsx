@@ -31,7 +31,7 @@ export default function RootLayout({
                   FMIS 45 Election
                 </h1>
                 <p className="text-xs text-slate-500 hidden sm:block">
-                  Faculty of Management Information Systems
+                  Financial Mathematics and Industrial Statistics
                 </p>
               </div>
             </div>
