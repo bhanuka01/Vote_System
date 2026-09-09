@@ -52,9 +52,6 @@ export default function AdminLayout({
           <span className="text-xs font-bold uppercase tracking-wider bg-slate-900 text-white px-2.5 py-1 rounded-md">
             Admin Portal
           </span>
-          <span className="text-sm font-semibold text-slate-700 hidden sm:inline">
-            Election Commission
-          </span>
         </div>
 
         {/* Navigation Tabs */}

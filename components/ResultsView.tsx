@@ -210,8 +210,109 @@ export default function ResultsView({
           </div>
         </div>
 
-        {/* Results Table (Responsive) */}
-        <div className="overflow-x-auto">
+        {/* Mobile View: Vertical Card Stack (100% screen width, no horizontal scroll needed) */}
+        <div className="block sm:hidden space-y-3">
+          {results.candidates.map((candidate, idx) => {
+            const isLeader = idx === 0 && candidate.weighted_score > 0;
+            const barWidth =
+              highestScore > 0
+                ? `${(candidate.weighted_score / highestScore) * 100}%`
+                : '0%';
+
+            return (
+              <div
+                key={`mobile-${candidate.id}`}
+                className={`p-4 rounded-xl border transition-all ${
+                  isLeader
+                    ? 'border-indigo-300 bg-indigo-50/40 shadow-sm'
+                    : 'border-slate-200 bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <span
+                      className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 ${
+                        idx === 0
+                          ? 'bg-amber-400 text-amber-950 shadow-sm'
+                          : idx === 1
+                          ? 'bg-slate-300 text-slate-800'
+                          : idx === 2
+                          ? 'bg-amber-700/30 text-amber-900'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {idx + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-bold text-slate-900 text-base leading-tight flex items-center space-x-1.5 flex-wrap gap-y-1">
+                        <span className="truncate">{candidate.name}</span>
+                        {isLeader && (
+                          <span className="text-[10px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full uppercase flex-shrink-0">
+                            Leader
+                          </span>
+                        )}
+                      </div>
+                      {candidate.bio && (
+                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
+                          {candidate.bio}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Total Weighted Score */}
+                  <div className="text-right flex-shrink-0 pl-2">
+                    <div className="text-base font-extrabold text-indigo-600">
+                      {candidate.weighted_score}{' '}
+                      <span className="text-[10px] font-normal text-slate-400">pts</span>
+                    </div>
+                    <span className="text-[10px] uppercase font-semibold text-slate-400 block">
+                      Score
+                    </span>
+                  </div>
+                </div>
+
+                {/* Score Bar */}
+                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-3">
+                  <div
+                    className="h-full bg-indigo-600 rounded-full transition-all duration-300"
+                    style={{ width: barWidth }}
+                  ></div>
+                </div>
+
+                {/* 1st & 2nd Preference Breakdown Pills */}
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100/80 text-xs">
+                  <div className="flex items-center justify-between bg-indigo-50/60 border border-indigo-100/70 rounded-lg px-2.5 py-1.5">
+                    <span className="text-slate-600 text-[11px] font-medium">
+                      1st Preference:
+                    </span>
+                    <span className="font-bold text-indigo-900 text-sm">
+                      {candidate.first_preference_count}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-lg px-2.5 py-1.5">
+                    <span className="text-slate-600 text-[11px] font-medium">
+                      2nd Preference:
+                    </span>
+                    <span className="font-bold text-slate-800 text-sm">
+                      {candidate.second_preference_count}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {results.candidates.length === 0 && (
+            <div className="text-center py-8 text-slate-500 text-sm">
+              No candidates registered yet.
+            </div>
+          )}
+        </div>
+
+        {/* Desktop View: Full Table (Hidden on Mobile) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">
